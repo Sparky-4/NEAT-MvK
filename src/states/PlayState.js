@@ -1,7 +1,7 @@
 class PlayState{
 
     constructor(){
-      this.mode = 1;
+      this.mode = 0;
 
       if(this.mode == 0)
         this.runOnePop();
@@ -13,22 +13,13 @@ class PlayState{
 
     runOnePop(){
       this.pop = new Population(100);
-      while(this.pop.generation < 150){
+      while(this.pop.generation < 10){
         this.step();
       }
     }
 
     runDoublePop(){
-      this.pop = new Population(100);
-      while(this.pop.generation < 100){
-        this.step();
-      }
-      let temp = this.pop.bestPlayer;
       this.pop = new DoublePopulation(100);
-      for(let i = 0; i < this.pop.population1; i++){
-        let newPlayer = temp.clone();
-        this.pop.population1[i] = newPlayer;
-      }
       while(this.pop.generation < 100){
         this.step();
       }
