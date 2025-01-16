@@ -1,7 +1,7 @@
 class PlayState{
 
     constructor(){
-      this.mode = 0;
+      this.mode = 3;
 
       if(this.mode == 0)
         this.runOnePop();
@@ -9,6 +9,8 @@ class PlayState{
         this.runDoublePop();
       else if(this.mode == 2)
         this.fightTrainer();
+      else if(this.mode == 3)
+        this.runAltPop();
     }
 
     enter(params){}
@@ -19,9 +21,28 @@ class PlayState{
     }
 
     runOnePop(){
-      this.pop = new Population(100);
+      // Train mack on the trainer
+      this.pop = new Population(100, 0, "trainer");
       while(this.pop.generation < 100){
         this.step();
+      }
+    }
+
+    runAltPop(){
+      // Train mack on the trainer
+      this.pop = new Population(100, 0, "trainer");
+      while(this.pop.generation < 100){
+        this.step();
+      }
+      
+      // Train the AIs on each other
+      let rounds = 50;
+      for(let i = 0; i < rounds; i++){
+        let temp = this.pop.bestPlayer.clone();
+        this.pop = new Population(100, temp.side==0?1:0, temp);
+        while(this.pop.generation < 10){
+          this.step();
+        }
       }
     }
 
@@ -54,6 +75,9 @@ class PlayState{
         this.mack.update(this.trainer);
         this.trainer.update(this.mack);
       }
+      else if (this.mode == 3){
+        this.updateOnePop();
+      }
     }
 
     updateDoublePop(){
@@ -62,7 +86,7 @@ class PlayState{
 
     updateOnePop(){
       if(keys[32]){
-        this.pop.bestEnemy = new Sprite(1);
+        this.pop.bestEnemy = new Sprite(this.pop.character == 0?1:0);
       }
       else if (keys[16])
         this.pop.bestEnemy = this.pop.newTrainer();
@@ -80,7 +104,7 @@ class PlayState{
     * renders the state
     */
     render(){
-      if(this.mode == 0 || this.mode == 1)  
+      if(this.mode == 0 || this.mode == 1 || this.mode == 3)  
         this.pop.showBest();
       else if (this.mode == 2){
         this.mack.draw();

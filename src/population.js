@@ -5,7 +5,9 @@ let genomeOutputN = 5;
 //Here is where the power of all the classes
 //comes together to destroy the game score records
 class Population{
-	constructor(size){
+	constructor(size, character, enemy){
+		this.enemy = enemy;
+		this.character = character;
 		this.population = [];
 		this.trainers = [];
 		this.bestPlayer;
@@ -15,7 +17,7 @@ class Population{
 		this.matingPool = [];
 
 		for(let i = 0; i < size; i++){
-			this.population.push(new Player(i, 0));
+			this.population.push(new Player(i, character));
 			this.population[i].brain.generateNetwork();
 			this.population[i].brain.mutate();
 			this.trainers[i] = this.newTrainer();
@@ -23,7 +25,11 @@ class Population{
 	}
 
 	newTrainer(){
-		return new Trainer(randInt(0, 1))
+		if(this.enemy == "trainer")
+			return new Trainer(this.character == 0?1:0);
+		else{
+			return this.enemy.clone();
+		}
 	}
 
 	updateAlive(){
@@ -55,6 +61,12 @@ class Population{
 			this.bestPlayer.think();
 			this.bestPlayer.move();
 			this.bestPlayer.update(this.bestEnemy);
+
+			if(this.bestEnemy.look){
+				this.bestEnemy.look(this.bestPlayer);
+				this.bestEnemy.think();
+				this.bestEnemy.move();
+			}
 			this.bestEnemy.update(this.bestPlayer);
 		}
 	}

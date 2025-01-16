@@ -301,6 +301,6 @@ class Player{
 
 	calculateFitness(){ //Fitness function : adapt it to the needs of the
 		this.fitness = this.score;
-		this.fitness /= this.brain.calculateWeight();
+		// this.fitness /= this.brain.calculateWeight();
 	}
 }
