@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fighting Game</title>
+	<style>
+		body {
+			overflow: hidden;
+			margin: 0px;
+		}
+	</style>
+</head>
+<body onLoad = requestAnimationFrame(start)>
+<canvas></canvas>
+
+<script src="src/StateMachine.js"></script>
+<script src="src/constants.js"></script>
+<script src="src/Animation.js"></script>
+<script src="src/Sprite.js"></script>
+<script src="src/Quad.js"></script>
+<script src="src/Util.js"></script>
+<script src="src/Timer.js"></script>
+<script src="src/Trainer.js"></script>
+
+<!--js scripts for all states-->
+<script src="src/states/PlayState.js"></script>
+
+<!-- NEAT implementation scripts -->
+<script src="src/population.js"></script>
+<script src="src/DoublePopulation.js"></script>
+<script src="src/player.js"></script>
+<script src="src/node.js"></script>
+<script src="src/connection.js"></script>
+<script src="src/genome.js"></script>
+
+<script>
+
+    // Declare and initialize the canvas variables
+    let canvas = document.querySelector('canvas');
+    let ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Variables for finding FPS
+    const times = [];
+    let fps = 60;
+    let msPrev = window.performance.now();
+    const vFPS = 60;
+    const msPerFrame = 1000 / vFPS;
+
+    // Load new font from the font files
+    let font = new FontFace('font', 'url(fonts/font.ttf)');
+    font.load().then(function(loaded_face) {
+        document.fonts.add(loaded_face);
+    })
+    
+    // Declare and initialize objects that holds fonts
+    let gFonts = {
+        small: 20*SCALE_FACTOR_WIDTH + "px font",
+        medium: 40*SCALE_FACTOR_WIDTH + "px font",
+        large: 80*SCALE_FACTOR_WIDTH + "px font",
+        other: 10*SCALE_FACTOR_WIDTH + "px Arial"
+    };
+
+    // Declare all sounds as audio objects in a global sounds object
+    let gSounds = {
+        counter: document.createElement("AUDIO"),
+        cucumber: document.createElement("AUDIO"),
+        hit: document.createElement("AUDIO"),
+        kenjiDeath: document.createElement("AUDIO"),
+        kenjiHurt: document.createElement("AUDIO"),
+        kenjiJump: document.createElement("AUDIO"),
+        kenjiWin: document.createElement("AUDIO"),
+        mackDeath: document.createElement("AUDIO"),
+        mackHurt: document.createElement("AUDIO"),
+        mackJump: document.createElement("AUDIO"),
+        mackWin: document.createElement("AUDIO"),
+        nobodyWin: document.createElement("AUDIO"),
+        nobodyWin2: document.createElement("AUDIO"),
+        peanut: document.createElement("AUDIO"),
+        punish: document.createElement("AUDIO"),
+        song: document.createElement("AUDIO"),
+        sword: document.createElement("AUDIO"),
+    };
+	
+    // Initialize all sounds from files
+    gSounds.counter.src = "sounds/Counter.mp3";
+    gSounds.cucumber.src = "sounds/Cucumber.mp3";
+    gSounds.hit.src = "sounds/Hit.mp3";
+    gSounds.kenjiDeath.src = "sounds/KenjiDeath.mp3";
+    gSounds.kenjiHurt.src = "sounds/KenjiHurt.mp3";
+    gSounds.kenjiJump.src = "sounds/KenjiJump.mp3";
+    gSounds.kenjiWin.src = "sounds/KenjiWin.mp3";
+    gSounds.mackDeath.src = "sounds/MackDeath.mp3";
+    gSounds.mackHurt.src = "sounds/MackHurt.mp3";
+    gSounds.mackJump.src = "sounds/MackJump.mp3";
+    gSounds.mackWin.src = "sounds/MackWin.mp3";
+    gSounds.nobodyWin.src = "sounds/NobodyWin.mp3";
+    gSounds.nobodyWin2.src = "sounds/NobodyWin2.mp3";
+    gSounds.peanut.src = "sounds/Peanut.mp3";
+    gSounds.punish.src = "sounds/Punish.mp3";
+    gSounds.song.src = "sounds/Song.mp3";
+    gSounds.sword.src = "sounds/Sword.mp3";
+
+    // Declare all images as image objects in a global textures object
+    let gTextures = {
+        background: new Image(1024, 576),
+        shop: new Image(708, 128),
+        mackIdle: new Image(1600, 200),
+        mackRun: new Image(1600, 200),
+        mackJump: new Image(400, 200),
+        mackFall: new Image(400, 200),
+        mackAttack1: new Image(1200, 200),
+        mackAttack2: new Image(1200, 200),
+        mackDeath: new Image(1200, 200),
+        mackHit: new Image(800, 200),
+        kenjiIdle: new Image(800, 200),
+        kenjiRun: new Image(1600, 200),
+        kenjiJump: new Image(400, 200),
+        kenjiFall: new Image(400, 200),
+        kenjiAttack1: new Image(800, 200),
+        kenjiAttack2: new Image(800, 200),
+        kenjiDeath: new Image(1400, 200),
+        kenjiHit: new Image(800, 200),
+    };
+
+    // Initialize all images from files
+    gTextures.background.src = "graphics/background.png";
+    gTextures.shop.src = "graphics/shop.png";
+    gTextures.mackIdle.src = "graphics/mack/Idle.png";
+    gTextures.mackRun.src = "graphics/mack/Run.png";
+    gTextures.mackJump.src = "graphics/mack/Jump.png";
+    gTextures.mackFall.src = "graphics/mack/Fall.png";
+    gTextures.mackAttack1.src = "graphics/mack/Attack1.png";
+    gTextures.mackAttack2.src = "graphics/mack/Attack2.png";
+    gTextures.mackDeath.src = "graphics/mack/Death.png";
+    gTextures.mackHit.src = "graphics/mack/Take Hit - white silhouette.png";
+    gTextures.kenjiIdle.src = "graphics/kenji/Idle.png";
+    gTextures.kenjiRun.src = "graphics/kenji/Run.png";
+    gTextures.kenjiJump.src = "graphics/kenji/Jump.png";
+    gTextures.kenjiFall.src = "graphics/kenji/Fall.png";
+    gTextures.kenjiAttack1.src = "graphics/kenji/Attack1.png";
+    gTextures.kenjiAttack2.src = "graphics/kenji/Attack2.png";
+    gTextures.kenjiDeath.src = "graphics/kenji/Death.png";
+    gTextures.kenjiHit.src = "graphics/kenji/Take hit.png";
+
+    gFrames = {
+        background: GenerateQuads(gTextures.background, 1024, 576, 1024, 576),
+        shop: GenerateQuads(gTextures.shop, 118, 128, 324.5, 352),
+        mackRight: GenerateMackRight(),
+        kenjiRight: GenerateKenjiRight(),
+    }
+    let showHitboxes = false;
+
+    // Add event listeners for keydown and keyup and change the array "keys" accordingly
+    let keys = [];
+    window.addEventListener('keydown', function (e) {
+        keys[e.keyCode] = true;
+    })
+    window.addEventListener('keyup', function (e) {
+        keys[e.keyCode] = false;
+    })
+
+    // Create state machine and initialize states
+    gStateMachine = new StateMachine({
+        play: new PlayState(),
+        });
+    gStateMachine.change('play');
+
+    function start(){
+        update();
+        draw();
+    }
+
+    /* 
+    * The update function - called every frame using requestAnimationFrame and updates
+    * individual parts of the game
+    */
+    function update(){
+        requestAnimationFrame(update);
+        if(keys[72])
+            showHitboxes = !showHitboxes;
+        const msNow = window.performance.now();
+        const msPassed = msNow - msPrev;
+
+        if (msPassed < msPerFrame) return;
+
+        const excessTime = msPassed % msPerFrame;
+        msPrev = msNow - excessTime;
+        gStateMachine.update();
+        requestAnimationFrame(draw);
+    }
+
+    /*
+    * Draw on the canvas and call the render functions of other necessary parts
+    */
+    function draw(){ 
+        ctx.imageSmoothingEnabled = false;
+        gFrames.background[0].draw(0, 0);
+        gStateMachine.render();
+        displayFPS();
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom'
+        ctx.font = gFonts.small;
+        ctx.fillStyle = 'white';
+        ctx.fillText("V" + VERSION, WINDOW_WIDTH, WINDOW_HEIGHT);
+    }
+
+    /*
+    * Display the FPS by adding a time stamp to the times array and removing any stamp
+    * longer than one second
+    */
+    function displayFPS(){
+        const now = performance.now();
+        while (times.length > 0 && times[0] <= now - 1000) {
+            times.shift();
+        }
+        times.push(now);
+        fps = times.length;
+        
+        ctx.textBaseline = 'bottom';
+        ctx.textAlign = 'left';
+        ctx.font = gFonts.small;
+        ctx.fillStyle = 'LightSkyBlue';
+        ctx.fillText("FPS: " + fps, 20*SCALE_FACTOR_WIDTH, 20*SCALE_FACTOR_HEIGHT);
+    }
+
+    function randInt(min, max){
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min); 
+    }
+
+    // Standard Normal variate using Box-Muller transform.
+	function randomGaussian(mean=0, stdev=1) {
+		const u = 1 - Math.random(); // Converting [0,1) to (0,1]
+		const v = Math.random();
+		const z = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+		// Transform to the desired mean and standard deviation:
+		return z * stdev + mean;
+	}
+
+</script>
+
+</body>
+</html>
