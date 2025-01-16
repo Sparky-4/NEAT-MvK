@@ -1,22 +1,57 @@
 class Sprite {
-    constructor(position, velocity, width, height, moveKeys, healthPos, sprites, animations, sounds) {
-        this.position = position;
-        this.velocity = velocity;
-        this.width = width;
-        this.height = height;
-        this.moveKeys = moveKeys;
+    constructor(side) {
+        if(side == 0){
+			this.position = {x:150, y:200};
+			this.sprites = gFrames.mackRight;
+			this.animations = {
+				idle: new Animation([0, 1, 2, 3, 4, 5, 6, 7], 5),
+				run: new Animation([8, 9, 10, 11, 12, 13, 14, 15], 5),
+				jump: new Animation([16, 17], 60),
+				fall: new Animation([18, 19], 60),
+				attack1: new Animation([20, 21, 22, 23, 24, 25], 5),
+				attack2: new Animation([26, 27, 28, 29, 30, 31], 10),
+				death: new Animation([32, 33, 34, 35, 36, 37], 7),
+				hit: new Animation([38, 39, 40, 41], 7),
+			};
+			this.sounds = {
+				death: gSounds.mackDeath,
+				hurt: gSounds.mackHurt,
+				jump: gSounds.mackJump,
+			};
+            this.moveKeys = {up:87, down:83, left:65, right:68, attack: 83};
+		}
+		else if(side == 1){
+			this.position = {x:750, y:200};
+			this.sprites = gFrames.kenjiRight;
+			this.animations = {
+				idle: new Animation([0, 1, 2, 3], 7),
+				run: new Animation([11, 10, 9, 8, 7, 6, 5, 4], 5),
+				jump: new Animation([12, 13], 60),
+				fall: new Animation([14, 15], 60),
+				attack1: new Animation([19, 18, 17, 16], 5),
+				attack2: new Animation([23, 22, 21, 20], 10),
+				death: new Animation([24, 25, 26, 27, 28, 29, 30], 7),
+				hit: new Animation([31, 32, 33, 34], 7),
+			};
+			this.sounds = {
+				death: gSounds.kenjiDeath,
+				hurt: gSounds.kenjiHurt,
+				jump: gSounds.kenjiJump,
+			};
+            this.moveKeys = {up:38, down:40, left:37, right:39, attack: 40};
+		}
+        this.velocity = {x:0, y:0};
+        this.width = 100;
+        this.height = 150;
         this.health = 100;
-        this.healthPos = healthPos;
+        this.healthPos = side+1;
         this.hitstun = 0;
-        this.sprites = sprites;
-        this.animations = animations;
         this.curAnimation = this.animations.idle;
         this.deathFrames = this.animations.death.interval*this.animations.death.frames.length;
         this.display = {
             message: '',
             frames: 0,
         }
-        this.sounds = sounds;
         this.forwardHitbox = {
             x: this.position.x,
             y: this.position.y + 50,

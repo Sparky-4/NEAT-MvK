@@ -23,27 +23,7 @@ class Population{
 	}
 
 	newTrainer(){
-		return new Trainer(
-			{x:750, y:200},
-			{x:0, y:0},
-			100, 150,
-			{up:38, down:40, left:37, right:39, attack: 40},
-			2, gFrames.kenjiRight,
-			{
-			  idle: new Animation([0, 1, 2, 3], 7),
-			  run: new Animation([11, 10, 9, 8, 7, 6, 5, 4], 5),
-			  jump: new Animation([12, 13], 60),
-			  fall: new Animation([14, 15], 60),
-			  attack1: new Animation([19, 18, 17, 16], 5),
-			  attack2: new Animation([23, 22, 21, 20], 10),
-			  death: new Animation([24, 25, 26, 27, 28, 29, 30], 7),
-			  hit: new Animation([31, 32, 33, 34], 7),
-			},
-			{
-			  death: gSounds.kenjiDeath,
-			  hurt: gSounds.kenjiHurt,
-			  jump: gSounds.kenjiJump,
-		  });
+		return new Trainer(randInt(0, 1))
 	}
 
 	updateAlive(){
