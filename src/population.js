@@ -1,5 +1,6 @@
 let genomeInputsN = 5;
 let genomeOutputN = 5;
+let timeImpact = 0.5;
 
 //The Population Class
 //Here is where the power of all the classes

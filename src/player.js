@@ -296,8 +296,7 @@ class Player{
 
 	calculateFitness(other){ //Fitness function : adapt it to the needs of the
         this.score = (100-other.health+this.health)/20;
-        if(this.lifespan == 0)
-            this.score/=2;
+        this.score = this.score*(1-timeImpact) + this.score*(this.lifespan/1800)*timeImpact;
 		this.fitness = this.score;
 		// this.fitness /= this.brain.calculateWeight();
 	}

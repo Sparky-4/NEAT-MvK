@@ -31,7 +31,7 @@ class PlayState{
     runAltPop(){
       // Train mack on the trainer
       this.pop = new Population(100, 0, "trainer");
-      while(this.pop.generation < 100){
+      while(this.pop.generation < 500){
         this.step();
       }
       let mackPop = this.pop;
@@ -42,7 +42,7 @@ class PlayState{
         this.pop = new Population(100, (i%2)==0?1:0, "trainer");
         this.pop.population = (i%2)==0?kenjiPop.population:mackPop.population;
         this.pop.enemy = (i%2)==0?mackPop.bestPlayer.clone():kenjiPop.bestPlayer.clone();
-        while(this.pop.generation < 100){
+        while(this.pop.generation < 500){
           this.step();
         }
         if((i%2)==0)
