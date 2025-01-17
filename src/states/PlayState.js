@@ -1,7 +1,7 @@
 class PlayState{
 
     constructor(){
-      this.mode = 0;
+      this.mode = 3;
 
       if(this.mode == 0)
         this.runOnePop();
@@ -31,18 +31,24 @@ class PlayState{
     runAltPop(){
       // Train mack on the trainer
       this.pop = new Population(100, 0, "trainer");
-      while(this.pop.generation < 500){
+      while(this.pop.generation < 100){
         this.step();
       }
-      
+      let mackPop = this.pop;
+      let kenjiPop = new Population(100, 1, mackPop.bestPlayer);
       // Train the AIs on each other
-      let rounds = 100;
+      let rounds = 10;
       for(let i = 0; i < rounds; i++){
-        let temp = this.pop.bestPlayer.clone();
-        this.pop = new Population(100, temp.side==0?1:0, temp);
-        while(this.pop.generation < 50){
+        this.pop = new Population(100, (i%2)==0?1:0, "trainer");
+        this.pop.population = (i%2)==0?kenjiPop.population:mackPop.population;
+        this.pop.enemy = (i%2)==0?mackPop.bestPlayer.clone():kenjiPop.bestPlayer.clone();
+        while(this.pop.generation < 100){
           this.step();
         }
+        if((i%2)==0)
+          kenjiPop = this.pop;
+        else
+          mackPop = this.pop;
       }
     }
 
@@ -98,6 +104,7 @@ class PlayState{
       }
 
       this.pop.updateBest();
+      // this.pop.updateAlive();
     }
 
     /*
@@ -106,6 +113,7 @@ class PlayState{
     render(){
       if(this.mode == 0 || this.mode == 1 || this.mode == 3)  
         this.pop.showBest();
+        // this.pop.showAlive();
       else if (this.mode == 2){
         this.mack.draw();
         this.trainer.draw();

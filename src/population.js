@@ -42,6 +42,11 @@ class Population{
 				this.population[i].update(this.trainers[i]);
 
 				//update the trainers
+				if(this.trainers[i].look){
+					this.trainers[i].look(this.population[i]);
+					this.trainers[i].think();
+					this.trainers[i].move();
+				}
 				this.trainers[i].update(this.population[i]);
 			}
 		}
@@ -51,6 +56,7 @@ class Population{
 		for(let i = 0; i < this.population.length; i++){
 			if(!this.population[i].dead){
 				this.population[i].show();
+				this.trainers[i].show();
 			}
 		}
 	}
@@ -118,26 +124,26 @@ class Population{
 		this.bestPlayer.health = 100;
 		this.bestPlayer.lifespan = 1800;
 		this.bestPlayer.dead = false;
-		this.bestPlayer.score = 5;
+		this.bestPlayer.score = 0;
 
 		this.bestEnemy = this.newTrainer();
 	}
 
 	calculateFitness(){
 		let currentMax = 0;
-		this.population.forEach((element) => { 
-			element.calculateFitness();
+		for(let i = 0; i < this.population.length; i++) { 
+			let element = this.population[i];
+			element.calculateFitness(this.trainers[i]);
 			if(element.fitness > this.bestFitness){
 				this.bestFitness = element.fitness;
 				this.bestPlayer = element.clone();
-				this.bestEnemy = this.newTrainer();
 				this.bestPlayer.brain.id = "BestGenome";
 				this.bestPlayer.brain.draw();
 			}
 
 			if(element.fitness > currentMax)
 				currentMax = element.fitness;
-		});
+		}
 
 		//Normalize
 		this.population.forEach((element, elementN) => { 

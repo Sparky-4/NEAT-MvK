@@ -127,6 +127,8 @@ class Trainer {
     }
 
     handleDamage(other){
+        if(this.dead)
+            return;
         if(other.forwardHitbox.isAttacking && this.collides(other.forwardHitbox)){
             this.health = Math.max(0, this.health-other.forwardHitbox.damage);
             this.hitstun = other.forwardHitbox.hitstun;

@@ -9,7 +9,7 @@ class Player{
 		this.fitness;
 		this.lifespan = 1800;
 
-		this.score = 5;
+		this.score = 0;
 		this.dead = false;
 		// 0 = nothing, 1 = left, 2 = jump, 3 = right, 4 = attack
 		this.decisions = []; //Current Output values
@@ -124,9 +124,10 @@ class Player{
     }
 
 	handleDamage(other){
+        if(this.dead)
+            return;
 		//If we get hit
         if(other.forwardHitbox.isAttacking && this.collides(other.forwardHitbox)){
-			this.score--;
             this.health = Math.max(0, this.health-other.forwardHitbox.damage);
             this.hitstun = other.forwardHitbox.hitstun;
             this.resetAnimations(10, other.forwardHitbox.hitstun);
@@ -147,10 +148,6 @@ class Player{
                 this.facing = true;
             }
         }
-		// If we hit the other
-		if(this.forwardHitbox.isAttacking && other.collides(this.forwardHitbox)){
-			this.score++;
-		}
     }
 
 	handleAnimation(){
@@ -242,8 +239,6 @@ class Player{
 		this.lifespan--;
 		if(this.health <= 0 || this.lifespan <= 0)
             this.dead = true;
-		if(this.lifespan <= 0)
-			this.score /= 2;
 	}
 
 	show(){
@@ -299,7 +294,10 @@ class Player{
         }
     }
 
-	calculateFitness(){ //Fitness function : adapt it to the needs of the
+	calculateFitness(other){ //Fitness function : adapt it to the needs of the
+        this.score = (100-other.health+this.health)/20;
+        if(this.lifespan == 0)
+            this.score/=2;
 		this.fitness = this.score;
 		// this.fitness /= this.brain.calculateWeight();
 	}
