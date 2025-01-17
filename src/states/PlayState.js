@@ -1,7 +1,7 @@
 class PlayState{
 
     constructor(){
-      this.mode = 3;
+      this.mode = 0;
 
       if(this.mode == 0)
         this.runOnePop();
@@ -31,16 +31,16 @@ class PlayState{
     runAltPop(){
       // Train mack on the trainer
       this.pop = new Population(100, 0, "trainer");
-      while(this.pop.generation < 100){
+      while(this.pop.generation < 500){
         this.step();
       }
       
       // Train the AIs on each other
-      let rounds = 50;
+      let rounds = 100;
       for(let i = 0; i < rounds; i++){
         let temp = this.pop.bestPlayer.clone();
         this.pop = new Population(100, temp.side==0?1:0, temp);
-        while(this.pop.generation < 10){
+        while(this.pop.generation < 50){
           this.step();
         }
       }
