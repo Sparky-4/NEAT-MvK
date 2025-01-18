@@ -304,7 +304,7 @@ class Genome {
 		return this.connections.length + this.nodes.length;
 	}
 
-	draw(width = 400, height = 400, container = "svgContainer") { //Draw the genome to a svg
+	draw(width = WINDOW_WIDTH, height = WINDOW_HEIGHT/4, container = "svgContainer") { //Draw the genome to a svg
 		var element = document.getElementById(this.id);
 		if (element)
 			element.parentNode.removeChild(element);

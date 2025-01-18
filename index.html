@@ -10,7 +10,12 @@
 	</style>
 </head>
 <body onLoad = requestAnimationFrame(start)>
-<canvas></canvas>
+<div>
+    <canvas style="float: left;"></canvas>
+    <p id="mode" style="font-size:xx-large; float: right; margin: 0; padding-top: 5vh; width:25%; text-align: center;">MackAI vs TrainerBot</p>
+    <button style="font-size:large; float: right; margin: 0; width:25%; text-align: center;" onclick="switchType()">Switch Type</button>
+    <p id="generation" style="font-size:xx-large; float: right; margin: 0; padding-top: 5vh; width:25%; text-align: center;"></p>
+</div>
 <div id="svgContainer"></div>
 
 <script src="src/StateMachine.js"></script>
@@ -27,7 +32,6 @@
 
 <!-- NEAT implementation scripts -->
 <script src="src/population.js"></script>
-<script src="src/DoublePopulation.js"></script>
 <script src="src/player.js"></script>
 <script src="src/node.js"></script>
 <script src="src/connection.js"></script>
@@ -39,8 +43,8 @@
     // Declare and initialize the canvas variables
     let canvas = document.querySelector('canvas');
     let ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = WINDOW_WIDTH;
+    canvas.height = WINDOW_HEIGHT;
 
     // Variables for finding FPS
     const times = [];
@@ -165,12 +169,21 @@
     // Create state machine and initialize states
     gStateMachine = new StateMachine({
         play: new PlayState(),
-        });
+    });
     gStateMachine.change('play');
 
     function start(){
         update();
         draw();
+    }
+
+    function switchType(){
+        mode = mode==0?3:0;
+        document.getElementById("mode").innerHTML = mode==0?"MackAI vs TrainerBot":"MackAI vs KenjiAI"
+        gStateMachine = new StateMachine({
+            play: new PlayState(),
+        });
+        gStateMachine.change('play');
     }
 
     /* 

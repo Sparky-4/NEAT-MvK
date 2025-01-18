@@ -1,6 +1,5 @@
 let genomeInputsN = 5;
 let genomeOutputN = 5;
-let timeImpact = 0.5;
 
 //The Population Class
 //Here is where the power of all the classes
@@ -57,7 +56,7 @@ class Population{
 		for(let i = 0; i < this.population.length; i++){
 			if(!this.population[i].dead){
 				this.population[i].show();
-				this.trainers[i].show();
+				this.trainers[i].draw();
 			}
 		}
 	}
@@ -97,7 +96,7 @@ class Population{
 		this.calculateFitness();
 
 		let averageSum = this.getAverageScore();
-		console.log(averageSum);
+		// console.log(averageSum);
 		let children = [];
 		
 		this.fillMatingPool();
@@ -119,14 +118,15 @@ class Population{
 			element.brain.generateNetwork();
 		});	
 
-		console.log("Generation " + this.generation);
+		// console.log("Generation " + this.generation);
 		//console.log(this);
+		this.resetBest();
 
-		this.bestPlayer.health = 100;
-		this.bestPlayer.lifespan = 1800;
-		this.bestPlayer.dead = false;
-		this.bestPlayer.score = 0;
+		document.getElementById("generation").innerHTML = "Generation: " + this.generation + "<br><br>Best Fitness: " + this.bestFitness;
+	}
 
+	resetBest(){
+		this.bestPlayer = this.bestPlayer.clone();
 		this.bestEnemy = this.newTrainer();
 	}
 
