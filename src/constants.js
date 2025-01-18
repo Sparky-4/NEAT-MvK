@@ -12,10 +12,10 @@ GRAVITY = .7;
 VERSION = 1.2;
 
 // Show every x generations
-let showGenerationNum = 20;
+let showGenerationNum = 50;
 
 // Train x generations before showing initially
-let generations = 20;
+let generations = 50;
 
 let mode = 0;
 let popSize = 100;

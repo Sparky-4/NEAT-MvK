@@ -1,4 +1,4 @@
-let genomeInputsN = 5;
+let genomeInputsN = 6;
 let genomeOutputN = 5;
 
 //The Population Class

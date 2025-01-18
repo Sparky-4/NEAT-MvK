@@ -197,7 +197,8 @@ class Player{
 
 	//Game stuff
 	look(t){
-		this.vision = [this.facing? 0:1, this.position.x - t.position.x, this.position.y - t.position.y, this.forwardHitbox.startup, t.forwardHitbox.startup];
+		this.vision = [this.facing? 0:1, this.position.x - t.position.x, this.position.y - t.position.y, 
+            this.forwardHitbox.startup, t.forwardHitbox.startup, t.forwardHitbox.recovery];
 	}
 
 	think(){
