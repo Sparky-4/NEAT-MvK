@@ -38,6 +38,13 @@ class PlayState{
       this.trainAlt();
     }
 
+    runDoublePop(){
+      this.pop = new DoublePop(popSize);
+      while(this.pop.generation < generations){
+        this.step();
+      }
+    }
+
     step(){
        if(!this.pop.done()){
         this.pop.updateAlive();
@@ -53,6 +60,9 @@ class PlayState{
     update(){
       if(mode == 0){
         this.updateOnePop();
+      }
+      else if (mode == 1){
+        this.updateDoublePop();
       }
       else if (mode == 3){
         this.updateAltPop();
@@ -71,6 +81,13 @@ class PlayState{
       this.pop.updateBest();
     }
 
+    updateDoublePop(){
+      while(this.pop.generation%showGenerationNum!=0 || this.pop.bestPlayer1.dead || this.pop.bestPlayer2.dead){
+        this.step();
+      }
+      this.pop.updateBest();
+    }
+
     updateAltPop(){
       this.handleInputs();
       if(this.pop.bestPlayer.dead || this.pop.bestEnemy.dead){
@@ -80,7 +97,6 @@ class PlayState{
     }
 
     trainAlt(){
-      // this.pop = (this.popCounter%2)==0?this.kenjiPop:this.mackPop;
       this.pop = new Population(popSize, (this.popCounter%2)==0?1:0, "trainer");
       this.pop.population = (this.popCounter%2)==0?this.kenjiPop.population:this.mackPop.population;
       this.pop.enemy = (this.popCounter%2)==0?this.mackPop.bestPlayer.clone():this.kenjiPop.bestPlayer.clone();
@@ -119,7 +135,6 @@ class PlayState{
     */
     render(){
       if(mode == 0 || mode == 3){
-        // console.log(this.pop)
         this.pop.showBest();
 
         //Timer
@@ -129,6 +144,17 @@ class PlayState{
         ctx.textBaseline = 'alphabetic';
         ctx.font = gFonts.medium;
         ctx.fillText(Math.floor(this.pop.bestPlayer.lifespan/60), 512*SCALE_FACTOR_WIDTH, 55*SCALE_FACTOR_HEIGHT);
+      }
+      else if(mode == 1){
+        this.pop.showBest();
+
+        //Timer
+        ctx.fillStyle = 'white';
+        ctx.strokeRect(460.8*SCALE_FACTOR_WIDTH, 23.04*SCALE_FACTOR_HEIGHT, 102.4*SCALE_FACTOR_WIDTH, 40.32*SCALE_FACTOR_HEIGHT);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.font = gFonts.medium;
+        ctx.fillText(Math.floor(this.pop.bestPlayer1.lifespan/60), 512*SCALE_FACTOR_WIDTH, 55*SCALE_FACTOR_HEIGHT);
       }
       else if (mode == 2){
         this.mack.draw();
